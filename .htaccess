@@ -1,0 +1,30 @@
+# =============================================================================
+# DRL CRÉATIONS — SÉCURITÉ APACHE (.htaccess)
+# =============================================================================
+Options -Indexes
+ServerSignature Off
+
+<IfModule mod_headers.c>
+    Header always set X-Content-Type-Options "nosniff"
+    Header always set X-Frame-Options "SAMEORIGIN"
+    Header always set X-XSS-Protection "1; mode=block"
+    Header always set Referrer-Policy "strict-origin-when-cross-origin"
+    Header always set Permissions-Policy "geolocation=(), microphone=(), camera=()"
+</IfModule>
+
+# Bloquer l'accès direct aux fichiers sensibles (.env, .sql, composer, config)
+<FilesMatch "^(\.env|\.env\.example|composer\.(json|lock)|.*\.sql|.*\.log|.*\.p8)$">
+    <IfModule mod_authz_core.c>
+        Require all denied
+    </IfModule>
+    <IfModule !mod_authz_core.c>
+        Order allow,deny
+        Deny from all
+    </IfModule>
+</FilesMatch>
+
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    # Interdire l'accès direct aux dossiers internes config/, classes/, database/, languages/
+    RewriteRule ^(config|classes|database|languages)/ - [F,L]
+</IfModule>

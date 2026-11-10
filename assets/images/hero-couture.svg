@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 720" width="600" height="720">
+  <defs>
+    <linearGradient id="bgNavy" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#142B49"/>
+      <stop offset="100%" stop-color="#0B192C"/>
+    </linearGradient>
+    <linearGradient id="goldLux" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#D5BD91"/>
+      <stop offset="100%" stop-color="#B89A62"/>
+    </linearGradient>
+  </defs>
+  <rect width="600" height="720" rx="20" fill="url(#bgNavy)"/>
+  <rect x="24" y="24" width="552" height="672" rx="14" fill="none" stroke="url(#goldLux)" stroke-width="1.5" opacity="0.65"/>
+  <circle cx="300" cy="240" r="150" fill="none" stroke="url(#goldLux)" stroke-width="1" opacity="0.35"/>
+  <!-- Mannequin & Silhouette Haute Couture -->
+  <path d="M300 120 C282 120 272 140 272 162 C272 185 255 205 245 235 C235 265 265 310 265 345 C265 390 210 510 175 615 L425 615 C390 510 335 390 335 345 C335 310 365 265 355 235 C345 205 328 185 328 162 C328 140 318 120 300 120 Z" fill="none" stroke="url(#goldLux)" stroke-width="3.5"/>
+  <path d="M265 345 Q300 365 335 345" fill="none" stroke="#F8F6F0" stroke-width="2"/>
+  <path d="M265 345 L215 615 M335 345 L385 615 M300 355 L300 615" stroke="url(#goldLux)" stroke-width="1.2" opacity="0.55"/>
+  <text x="300" y="660" text-anchor="middle" font-family="Georgia, serif" font-size="22" fill="#F8F6F0" letter-spacing="4">MAISON DRL CRÉATIONS</text>
+</svg>

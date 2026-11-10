@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 750" width="600" height="750">
+      <rect width="600" height="750" fill="#253954"/>
+      <rect x="28" y="28" width="544" height="694" fill="none" stroke="#EAE4D9" stroke-width="2"/>
+      <circle cx="300" cy="290" r="130" fill="none" stroke="#EAE4D9" stroke-width="1.2" stroke-dasharray="5,5"/>
+      <path d="M300 150 L250 320 L190 560 L410 560 L350 320 Z" fill="none" stroke="#EAE4D9" stroke-width="3"/>
+      <text x="300" y="625" text-anchor="middle" font-family="Georgia, serif" font-size="23" fill="#F8F6F0">Tailleur Architectural Ivoire</text>
+      <text x="300" y="660" text-anchor="middle" font-family="Arial, sans-serif" font-size="14" fill="#EAE4D9" letter-spacing="3">DRL-MOD-005 • SUR-MESURE</text>
+    </svg>

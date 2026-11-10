@@ -1,0 +1,20 @@
+{
+    "name": "drl-creations/atelier-haute-couture",
+    "description": "Plateforme web officielle Haute Couture & E-Commerce en PHP 8.2 Natif pour DRL CRÉATIONS",
+    "type": "project",
+    "license": "proprietary",
+    "require": {
+        "php": ">=8.2",
+        "ext-pdo": "*",
+        "ext-json": "*",
+        "ext-mbstring": "*",
+        "ext-fileinfo": "*",
+        "league/oauth2-client": "^2.7",
+        "league/oauth2-google": "^4.0",
+        "patrickbussmann/oauth2-apple": "^0.3"
+    },
+    "config": {
+        "optimize-autoloader": true,
+        "sort-packages": true
+    }
+}

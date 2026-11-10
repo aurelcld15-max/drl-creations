@@ -1,0 +1,213 @@
+/* =============================================================================
+   DRL CRÉATIONS — TABLEAU DE BORD ADMINISTRATEUR
+   ============================================================================= */
+body.drl-admin-body {
+    font-family: 'Poppins', sans-serif;
+    background: #F4F1EA;
+    color: #142B49;
+    margin: 0;
+}
+
+.drl-admin-wrapper {
+    display: grid;
+    grid-template-columns: 270px 1fr;
+    min-height: 100vh;
+}
+
+.drl-admin-sidebar {
+    background: #142B49;
+    color: #F8F6F0;
+    padding: 24px 18px;
+    display: flex;
+    flex-direction: column;
+    border-right: 2px solid #B89A62;
+}
+
+.drl-admin-brand {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding-bottom: 22px;
+    border-bottom: 1px solid rgba(184, 154, 98, 0.3);
+    margin-bottom: 20px;
+}
+
+.drl-admin-brand img {
+    width: 42px;
+    height: 42px;
+}
+
+.drl-admin-brand strong {
+    display: block;
+    font-family: 'Playfair Display', serif;
+    letter-spacing: 0.08em;
+}
+
+.drl-admin-brand span {
+    font-size: 0.74rem;
+    color: #D5BD91;
+}
+
+.drl-admin-nav {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    flex: 1;
+}
+
+.drl-admin-nav a {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 11px 14px;
+    border-radius: 10px;
+    color: #EAE4D9;
+    font-size: 0.88rem;
+}
+
+.drl-admin-nav a.active,
+.drl-admin-nav a:hover {
+    background: #B89A62;
+    color: #142B49;
+    font-weight: 600;
+}
+
+.drl-admin-sidebar-footer {
+    padding-top: 18px;
+    border-top: 1px solid rgba(184, 154, 98, 0.3);
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.drl-admin-logout {
+    color: #ffb4a2;
+    font-size: 0.85rem;
+    text-align: center;
+    padding: 8px;
+}
+
+.drl-admin-main {
+    display: flex;
+    flex-direction: column;
+}
+
+.drl-admin-topbar {
+    background: #FFFFFF;
+    padding: 18px 32px;
+    border-bottom: 1px solid rgba(184, 154, 98, 0.28);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.drl-admin-topbar h1 {
+    font-size: 1.45rem;
+}
+
+.drl-admin-content {
+    padding: 28px 32px;
+}
+
+.drl-admin-stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 18px;
+    margin-bottom: 24px;
+}
+
+.drl-stat-card {
+    background: #FFFFFF;
+    border: 1px solid rgba(184, 154, 98, 0.32);
+    border-radius: 14px;
+    padding: 20px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.drl-stat-icon {
+    width: 50px;
+    height: 50px;
+    border-radius: 12px;
+    background: rgba(184, 154, 98, 0.16);
+    color: #B89A62;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.3rem;
+}
+
+.drl-stat-card h3 {
+    font-size: 1.65rem;
+    margin-bottom: 2px;
+}
+
+.drl-stat-card p {
+    font-size: 0.8rem;
+    color: #777777;
+}
+
+.drl-admin-quick-bar,
+.drl-admin-toolbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-bottom: 24px;
+}
+
+.drl-admin-panel {
+    background: #FFFFFF;
+    border: 1px solid rgba(184, 154, 98, 0.28);
+    border-radius: 16px;
+    padding: 24px;
+}
+
+.drl-admin-thumb {
+    width: 54px;
+    height: 64px;
+    object-fit: cover;
+    border-radius: 8px;
+    border: 1px solid #B89A62;
+}
+
+.drl-admin-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.drl-select-inline {
+    padding: 6px 10px;
+    border-radius: 6px;
+    border: 1px solid #B89A62;
+    font-size: 0.8rem;
+}
+
+.drl-status-pill {
+    display: inline-block;
+    padding: 4px 10px;
+    border-radius: 999px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    background: #EAE4D9;
+}
+
+.status-available, .status-published, .status-completed {
+    background: #d4edda;
+    color: #155724;
+}
+
+.status-sold, .status-cancelled {
+    background: #f8d7da;
+    color: #721c24;
+}
+
+@media (max-width: 900px) {
+    .drl-admin-wrapper {
+        grid-template-columns: 1fr;
+    }
+}
