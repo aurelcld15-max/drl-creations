@@ -88,3 +88,4 @@
 - **Numéro WhatsApp** : Connectez-vous au tableau de bord (`admin/parametres.php`) et saisissez votre numéro WhatsApp au format international sans le signe `+` (ex: `2290197000000`). Tous les boutons WhatsApp du site et la classe `classes/WhatsApp.php` utiliseront immédiatement ce numéro.
 - **DRL Assistant** : Depuis `admin/assistant-ia.php`, vous pouvez activer/désactiver l'assistant, personnaliser son message d'accueil en Français et en Anglais, et enrichir les Questions Fréquentes (`faq`) utilisées pour répondre aux clients avec les données exactes de PostgreSQL.
 "# drl-creations" 
+"# drl-creations" 
