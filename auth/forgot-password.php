@@ -2,10 +2,9 @@
 declare(strict_types=1);
 
 require_once dirname(__DIR__) . '/includes/functions.php';
-require_once dirname(__DIR__) . '/classes/Auth.php';
+require_once dirname(__DIR__) . '/classes/SupabaseAuth.php';
 
 $sent = false;
-$resetUrlPreview = null;
 $error = null;
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -16,9 +15,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
             $error = 'Veuillez saisir une adresse e-mail valide.';
         } else {
-            $res = Auth::createPasswordReset($email);
-            $sent = true;
-            $resetUrlPreview = $res['reset_url'] ?? null;
+            try {
+                $res = SupabaseAuth::requestPasswordReset($email);
+                $sent = (bool)$res['success'];
+                $error = $res['error'] ?? null;
+            } catch (Throwable $e) {
+                error_log('[DRL Supabase password recovery] ' . $e->getMessage());
+                $error = 'Le service de récupération du mot de passe est indisponible. Veuillez réessayer.';
+            }
         }
     }
 }
@@ -39,11 +43,6 @@ require_once dirname(__DIR__) . '/includes/header.php';
                 <div class="drl-alert drl-alert-success">
                     <div>
                         Si un compte correspond à cette adresse e-mail, un lien de réinitialisation vous a été envoyé.
-                        <?php if ($resetUrlPreview): ?>
-                            <div style="margin-top:10px;">
-                                <a href="<?= e($resetUrlPreview) ?>" class="drl-btn drl-btn-sm drl-btn-primary">Réinitialiser maintenant (Mode local)</a>
-                            </div>
-                        <?php endif; ?>
                     </div>
                 </div>
             <?php else: ?>

@@ -2,7 +2,7 @@
 declare(strict_types=1);
 
 require_once dirname(__DIR__) . '/includes/functions.php';
-require_once dirname(__DIR__) . '/classes/Auth.php';
+require_once dirname(__DIR__) . '/classes/SupabaseAuth.php';
 
 if (is_logged_in()) {
     header('Location: ' . BASE_URL . '/client/profil.php');
@@ -10,7 +10,6 @@ if (is_logged_in()) {
 }
 
 $error = null;
-$verifyHintUrl = null;
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (!verify_csrf()) {
@@ -18,7 +17,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     } else {
         $email = trim((string)($_POST['email'] ?? ''));
         $pass  = (string)($_POST['password'] ?? '');
-        $res   = Auth::login($email, $pass);
+        try {
+            $res = SupabaseAuth::login($email, $pass);
+        } catch (Throwable $e) {
+            error_log('[DRL Supabase login] ' . $e->getMessage());
+            $res = ['success' => false, 'error' => $e->getMessage()];
+        }
 
         if ($res['success']) {
             set_flash('success', 'Heureux de vous revoir, ' . $_SESSION['user']['first_name'] . ' !');
@@ -30,7 +34,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             exit;
         }
         $error = $res['error'] ?? 'Erreur de connexion.';
-        $verifyHintUrl = $res['verify_url'] ?? null;
     }
 }
 
@@ -77,11 +80,6 @@ require_once dirname(__DIR__) . '/includes/header.php';
                 <div class="drl-alert drl-alert-danger" role="alert">
                     <div>
                         <?= e($error) ?>
-                        <?php if ($verifyHintUrl): ?>
-                            <div style="margin-top:8px;">
-                                <a href="<?= e($verifyHintUrl) ?>" class="drl-link-gold">Confirmer mon adresse e-mail maintenant</a>
-                            </div>
-                        <?php endif; ?>
                     </div>
                 </div>
             <?php endif; ?>
@@ -110,11 +108,11 @@ require_once dirname(__DIR__) . '/includes/header.php';
             <div class="drl-auth-divider drl-auth-divider-modern"><span><?= e(__('auth_or_continue')) ?></span></div>
 
             <div class="drl-oauth-buttons drl-oauth-buttons-modern">
-                <a href="<?= BASE_URL ?>/auth/oauth/google.php" class="drl-btn drl-btn-oauth drl-auth-social">
+                <a href="<?= BASE_URL ?>/auth/oauth/supabase.php?provider=google" class="drl-btn drl-btn-oauth drl-auth-social">
                     <i class="fa-brands fa-google"></i>
                     <span><?= e(__('auth_google_btn')) ?></span>
                 </a>
-                <a href="<?= BASE_URL ?>/auth/oauth/apple.php" class="drl-btn drl-btn-oauth drl-auth-social">
+                <a href="<?= BASE_URL ?>/auth/oauth/supabase.php?provider=apple" class="drl-btn drl-btn-oauth drl-auth-social">
                     <i class="fa-brands fa-apple"></i>
                     <span><?= e(__('auth_apple_btn')) ?></span>
                 </a>

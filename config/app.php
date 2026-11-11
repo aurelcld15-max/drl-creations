@@ -92,7 +92,7 @@ if (!defined('BASE_URL')) {
     } elseif (isset($_SERVER['HTTP_HOST'])) {
         $scheme = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https' : 'http';
         $scriptDir = str_replace('\\', '/', dirname($_SERVER['SCRIPT_NAME'] ?? ''));
-        $basePath = preg_replace('#/(admin|auth| auth/oauth|client|api|includes|config)$#', '', $scriptDir);
+        $basePath = preg_replace('#/(admin|auth(?:/oauth)?|client|api|includes|config)$#', '', $scriptDir);
         $basePath = rtrim((string)$basePath, '/');
         define('BASE_URL', $scheme . '://' . $_SERVER['HTTP_HOST'] . $basePath);
     } else {

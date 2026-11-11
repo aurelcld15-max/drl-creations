@@ -15,28 +15,47 @@ class Database
     {
         if (self::$instance === null) {
             $config = require DRL_ROOT . '/config/database.php';
-            $dsn = sprintf(
-                'mysql:host=%s;port=%d;dbname=%s;charset=%s',
-                $config['host'],
-                $config['port'],
-                $config['database'],
-                $config['charset']
-            );
+            $driver = $config['driver'];
+            if ($driver === 'pgsql') {
+                $dsn = sprintf(
+                    'pgsql:host=%s;port=%d;dbname=%s;sslmode=%s',
+                    $config['host'],
+                    $config['port'],
+                    $config['database'],
+                    $config['sslmode']
+                );
+            } else {
+                $dsn = sprintf(
+                    'mysql:host=%s;port=%d;dbname=%s;charset=%s',
+                    $config['host'],
+                    $config['port'],
+                    $config['database'],
+                    $config['charset']
+                );
+            }
 
             try {
                 self::$instance = new PDO($dsn, $config['username'], $config['password'], $config['options']);
             } catch (PDOException $e) {
                 error_log('[DRL Database Error] ' . $e->getMessage());
                 if (defined('APP_DEBUG') && APP_DEBUG) {
-                    throw new RuntimeException('Erreur de connexion MySQL : ' . $e->getMessage());
+                    throw new RuntimeException('Erreur de connexion ' . strtoupper($driver) . ' : ' . $e->getMessage());
                 }
                 throw new RuntimeException(
-                    'La connexion à la base de données MySQL est momentanément indisponible. Vérifiez que vous avez importé database/drl_creations.sql et configuré le fichier .env.'
+                    $driver === 'pgsql'
+                        ? 'La connexion à Supabase PostgreSQL est indisponible. Vérifiez les paramètres DB_* et l’extension PHP pdo_pgsql.'
+                        : 'La connexion à la base de données MySQL est momentanément indisponible. Vérifiez que vous avez importé database/drl_creations.sql et configuré le fichier .env.'
                 );
             }
         }
 
         return self::$instance;
+    }
+
+    public static function driver(): string
+    {
+        $config = require DRL_ROOT . '/config/database.php';
+        return $config['driver'];
     }
 
     /**
@@ -65,6 +84,11 @@ class Database
 
     public static function lastInsertId(): string
     {
+        $config = require DRL_ROOT . '/config/database.php';
+        if ($config['driver'] === 'pgsql') {
+            $row = self::fetchOne('SELECT LASTVAL() AS id');
+            return (string)($row['id'] ?? '');
+        }
         return self::getConnection()->lastInsertId();
     }
 

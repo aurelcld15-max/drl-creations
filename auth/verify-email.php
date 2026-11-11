@@ -2,11 +2,23 @@
 declare(strict_types=1);
 
 require_once dirname(__DIR__) . '/includes/functions.php';
-require_once dirname(__DIR__) . '/classes/Auth.php';
+require_once dirname(__DIR__) . '/classes/SupabaseAuth.php';
 
-$email = (string)($_GET['email'] ?? '');
-$token = (string)($_GET['token'] ?? '');
-$result = Auth::verifyEmailToken($email, $token);
+$tokenHash = (string)($_GET['token_hash'] ?? '');
+$type = (string)($_GET['type'] ?? 'email');
+$result = ['success' => false, 'error' => 'Le lien Supabase est incomplet ou invalide.'];
+if ($tokenHash !== '') {
+    try {
+        $result = SupabaseAuth::verifyOtp($tokenHash, $type);
+        if (!empty($result['success']) && !empty($result['is_recovery'])) {
+            header('Location: ' . BASE_URL . '/auth/reset-password.php');
+            exit;
+        }
+    } catch (Throwable $e) {
+        error_log('[DRL Supabase email verification] ' . $e->getMessage());
+        $result = ['success' => false, 'error' => $e->getMessage()];
+    }
+}
 
 $pageTitle = 'Vérification de votre adresse e-mail';
 require_once dirname(__DIR__) . '/includes/header.php';

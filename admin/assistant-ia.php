@@ -10,12 +10,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && verify_csrf()) {
         $wEn = trim((string)($_POST['ai_welcome_en'] ?? ''));
 
         foreach (['ai_enabled' => $enabled, 'ai_welcome_fr' => $wFr, 'ai_welcome_en' => $wEn] as $k => $v) {
-            Database::query(
-                "INSERT INTO site_settings (setting_key, setting_value, setting_group)
-                 VALUES (:k, :v, 'ai')
-                 ON DUPLICATE KEY UPDATE setting_value = VALUES(setting_value)",
-                [':k' => $k, ':v' => $v]
-            );
+            if (Database::driver() === 'pgsql') {
+                Database::query(
+                    "INSERT INTO site_settings (setting_key, setting_value, setting_group)
+                     VALUES (:k, :v, 'ai')
+                     ON CONFLICT (setting_key) DO UPDATE SET setting_value = EXCLUDED.setting_value",
+                    [':k' => $k, ':v' => $v]
+                );
+            } else {
+                Database::query(
+                    "INSERT INTO site_settings (setting_key, setting_value, setting_group)
+                     VALUES (:k, :v, 'ai')
+                     ON DUPLICATE KEY UPDATE setting_value = VALUES(setting_value)",
+                    [':k' => $k, ':v' => $v]
+                );
+            }
         }
         set_flash('success', 'La configuration de DRL Assistant a été mise à jour.');
     } elseif (isset($_POST['add_faq'])) {

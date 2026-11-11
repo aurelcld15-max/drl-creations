@@ -15,24 +15,42 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && verify_csrf()) {
     foreach ($keys as $k) {
         if (isset($_POST[$k])) {
             $val = trim((string)$_POST[$k]);
-            Database::query(
-                "INSERT INTO site_settings (setting_key, setting_value, setting_group)
-                 VALUES (:k, :v, 'general')
-                 ON DUPLICATE KEY UPDATE setting_value = VALUES(setting_value), updated_at = NOW()",
-                [':k' => $k, ':v' => $val]
-            );
+            if (Database::driver() === 'pgsql') {
+                Database::query(
+                    "INSERT INTO site_settings (setting_key, setting_value, setting_group)
+                     VALUES (:k, :v, 'general')
+                     ON CONFLICT (setting_key) DO UPDATE SET setting_value = EXCLUDED.setting_value, updated_at = CURRENT_TIMESTAMP",
+                    [':k' => $k, ':v' => $val]
+                );
+            } else {
+                Database::query(
+                    "INSERT INTO site_settings (setting_key, setting_value, setting_group)
+                     VALUES (:k, :v, 'general')
+                     ON DUPLICATE KEY UPDATE setting_value = VALUES(setting_value), updated_at = NOW()",
+                    [':k' => $k, ':v' => $val]
+                );
+            }
         }
     }
 
     if (!empty($_FILES['logo_file']['name'])) {
         $up = secure_image_upload($_FILES['logo_file'], 'profiles');
         if ($up['success']) {
-            Database::query(
-                "INSERT INTO site_settings (setting_key, setting_value, setting_group)
-                 VALUES ('site_logo', :v, 'general')
-                 ON DUPLICATE KEY UPDATE setting_value = VALUES(setting_value)",
-                [':v' => $up['path']]
-            );
+            if (Database::driver() === 'pgsql') {
+                Database::query(
+                    "INSERT INTO site_settings (setting_key, setting_value, setting_group)
+                     VALUES ('site_logo', :v, 'general')
+                     ON CONFLICT (setting_key) DO UPDATE SET setting_value = EXCLUDED.setting_value",
+                    [':v' => $up['path']]
+                );
+            } else {
+                Database::query(
+                    "INSERT INTO site_settings (setting_key, setting_value, setting_group)
+                     VALUES ('site_logo', :v, 'general')
+                     ON DUPLICATE KEY UPDATE setting_value = VALUES(setting_value)",
+                    [':v' => $up['path']]
+                );
+            }
         }
     }
 

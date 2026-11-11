@@ -137,6 +137,31 @@ function secure_image_upload(array $file, string $subDir, int $maxSizeBytes = 52
     }
 
     @chmod($destination, 0644);
+    if ((string)env('SUPABASE_URL', '') !== '') {
+        require_once DRL_ROOT . '/classes/SupabaseClient.php';
+        $accessToken = (string)($_SESSION['supabase_access_token'] ?? '');
+        $supabaseUid = (string)($_SESSION['supabase_uid'] ?? '');
+        if ($accessToken === '' || $supabaseUid === '') {
+            unlink($destination);
+            return ['success' => false, 'error' => 'Votre session Supabase a expiré. Reconnectez-vous avant de téléverser une image.'];
+        }
+
+        $objectPath = $subDir === 'profiles'
+            ? $subDir . '/' . rawurlencode($supabaseUid) . '/' . $uniqueName
+            : $subDir . '/' . $uniqueName;
+        try {
+            $publicUrl = SupabaseClient::upload($destination, $objectPath, (string)$realMime, $accessToken);
+            if (!unlink($destination)) {
+                error_log('[DRL Supabase Storage] Impossible de supprimer le fichier temporaire ' . $destination);
+            }
+            return ['success' => true, 'path' => $publicUrl];
+        } catch (Throwable $e) {
+            error_log('[DRL Supabase Storage upload] ' . $e->getMessage());
+            unlink($destination);
+            return ['success' => false, 'error' => 'Le transfert vers Supabase Storage a échoué. Vérifiez la configuration du bucket et réessayez.'];
+        }
+    }
+
     return [
         'success' => true,
         'path'    => 'uploads/' . $subDir . '/' . $uniqueName,

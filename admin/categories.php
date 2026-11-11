@@ -21,7 +21,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && verify_csrf()) {
         }
     } elseif (isset($_POST['toggle_cat_id'])) {
         Database::query(
-            "UPDATE categories SET is_active = IF(is_active = 1, 0, 1) WHERE id = :id",
+            "UPDATE categories SET is_active = CASE WHEN is_active = 1 THEN 0 ELSE 1 END WHERE id = :id",
             [':id' => (int)$_POST['toggle_cat_id']]
         );
         set_flash('success', 'Statut de la catégorie mis à jour.');

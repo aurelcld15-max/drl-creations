@@ -2,6 +2,7 @@
 declare(strict_types=1);
 
 require_once __DIR__ . '/Database.php';
+require_once __DIR__ . '/SupabaseAuth.php';
 
 /**
  * Classe User — Gestion des profils clients, demandes personnalisées et administration des comptes
@@ -71,22 +72,10 @@ class User
 
     public static function updatePassword(int $userId, string $currentPassword, string $newPassword): array
     {
-        $user = Database::fetchOne("SELECT password_hash FROM users WHERE id = :id LIMIT 1", [':id' => $userId]);
-        if (!$user) {
+        if (!isset($_SESSION['user']['id']) || (int)$_SESSION['user']['id'] !== $userId) {
             return ['success' => false, 'error' => 'Utilisateur introuvable.'];
         }
-        if (!empty($user['password_hash']) && !password_verify($currentPassword, (string)$user['password_hash'])) {
-            return ['success' => false, 'error' => 'Le mot de passe actuel est incorrect.'];
-        }
-        if (strlen($newPassword) < 8) {
-            return ['success' => false, 'error' => 'Le nouveau mot de passe doit contenir au moins 8 caractères.'];
-        }
-        $newHash = password_hash($newPassword, PASSWORD_BCRYPT, ['cost' => 12]);
-        Database::query(
-            "UPDATE users SET password_hash = :hash, updated_at = NOW() WHERE id = :id",
-            [':hash' => $newHash, ':id' => $userId]
-        );
-        return ['success' => true];
+        return SupabaseAuth::updatePassword($currentPassword, $newPassword);
     }
 
     public static function getClientRequests(int $userId, string $email): array
@@ -117,8 +106,11 @@ class User
 
     public static function toggleActiveStatus(int $userId): bool
     {
+        $toggle = Database::driver() === 'pgsql'
+            ? 'CASE WHEN is_active = 1 THEN 0 ELSE 1 END'
+            : 'IF(is_active = 1, 0, 1)';
         Database::query(
-            "UPDATE users SET is_active = IF(is_active = 1, 0, 1), updated_at = NOW() WHERE id = :id AND role != 'admin'",
+            "UPDATE users SET is_active = {$toggle}, updated_at = CURRENT_TIMESTAMP WHERE id = :id AND role != 'admin'",
             [':id' => $userId]
         );
         return true;

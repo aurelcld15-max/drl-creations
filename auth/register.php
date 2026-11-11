@@ -2,7 +2,7 @@
 declare(strict_types=1);
 
 require_once dirname(__DIR__) . '/includes/functions.php';
-require_once dirname(__DIR__) . '/classes/Auth.php';
+require_once dirname(__DIR__) . '/classes/SupabaseAuth.php';
 
 if (is_logged_in()) {
     header('Location: ' . BASE_URL . '/client/profil.php');
@@ -23,7 +23,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $pass      = (string)($_POST['password'] ?? '');
         $confirm   = (string)($_POST['password_confirm'] ?? '');
 
-        $res = Auth::register($firstName, $lastName, $email, $pass, $confirm, $phone);
+        try {
+            $res = SupabaseAuth::register($firstName, $lastName, $email, $pass, $confirm, $phone);
+        } catch (Throwable $e) {
+            error_log('[DRL Supabase signup] ' . $e->getMessage());
+            $res = ['success' => false, 'error' => $e->getMessage()];
+        }
         if ($res['success']) {
             $successData = $res;
         } else {
@@ -76,12 +81,7 @@ require_once dirname(__DIR__) . '/includes/header.php';
                     <div>
                         <strong><?= e($successData['message']) ?></strong>
                         <p style="margin-top:10px;font-size:0.9rem;">
-                            Sur un serveur local (XAMPP/WAMP sans relais SMTP externe), vous pouvez valider immédiatement votre adresse en cliquant sur le lien de vérification généré :
-                        </p>
-                        <p style="margin-top:10px;">
-                            <a href="<?= e($successData['verify_url']) ?>" class="drl-btn drl-btn-sm drl-btn-primary">
-                                <i class="fa-solid fa-envelope-circle-check"></i> Confirmer mon adresse e-mail et activer mon compte
-                            </a>
+                            Consultez votre boîte e-mail et suivez le lien Supabase pour confirmer votre adresse.
                         </p>
                     </div>
                 </div>
@@ -133,11 +133,11 @@ require_once dirname(__DIR__) . '/includes/header.php';
                 <div class="drl-auth-divider drl-auth-divider-modern"><span><?= e(__('auth_or_continue')) ?></span></div>
 
                 <div class="drl-oauth-buttons drl-oauth-buttons-modern">
-                    <a href="<?= BASE_URL ?>/auth/oauth/google.php" class="drl-btn drl-btn-oauth drl-auth-social">
+                    <a href="<?= BASE_URL ?>/auth/oauth/supabase.php?provider=google" class="drl-btn drl-btn-oauth drl-auth-social">
                         <i class="fa-brands fa-google"></i>
                         <span><?= e(__('auth_google_btn')) ?></span>
                     </a>
-                    <a href="<?= BASE_URL ?>/auth/oauth/apple.php" class="drl-btn drl-btn-oauth drl-auth-social">
+                    <a href="<?= BASE_URL ?>/auth/oauth/supabase.php?provider=apple" class="drl-btn drl-btn-oauth drl-auth-social">
                         <i class="fa-brands fa-apple"></i>
                         <span><?= e(__('auth_apple_btn')) ?></span>
                     </a>

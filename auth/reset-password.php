@@ -2,10 +2,8 @@
 declare(strict_types=1);
 
 require_once dirname(__DIR__) . '/includes/functions.php';
-require_once dirname(__DIR__) . '/classes/Auth.php';
+require_once dirname(__DIR__) . '/classes/SupabaseAuth.php';
 
-$email = (string)($_GET['email'] ?? ($_POST['email'] ?? ''));
-$token = (string)($_GET['token'] ?? ($_POST['token'] ?? ''));
 $done = false;
 $error = null;
 
@@ -13,15 +11,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (!verify_csrf()) {
         $error = 'Jeton CSRF invalide.';
     } else {
-        $pass    = (string)($_POST['password'] ?? '');
-        $confirm = (string)($_POST['password_confirm'] ?? '');
-        $res     = Auth::resetPasswordWithToken($email, $token, $pass, $confirm);
-        if ($res['success']) {
-            $done = true;
-        } else {
-            $error = $res['error'] ?? 'Erreur de réinitialisation.';
+        try {
+            $pass = (string)($_POST['password'] ?? '');
+            $confirm = (string)($_POST['password_confirm'] ?? '');
+            $res = SupabaseAuth::resetPassword($pass, $confirm);
+            if ($res['success']) {
+                SupabaseAuth::signOut();
+                $done = true;
+            } else {
+                $error = $res['error'] ?? 'Erreur de réinitialisation.';
+            }
+        } catch (Throwable $e) {
+            error_log('[DRL Supabase password update] ' . $e->getMessage());
+            $error = $e->getMessage();
         }
     }
+} elseif (empty($_SESSION['supabase_access_token'])) {
+    $error = 'Ouvrez le lien de récupération reçu par e-mail pour choisir un nouveau mot de passe.';
 }
 
 $pageTitle = 'Nouveau mot de passe';
@@ -41,12 +47,11 @@ require_once dirname(__DIR__) . '/includes/header.php';
                 <a href="<?= BASE_URL ?>/auth/login.php" class="drl-btn drl-btn-primary drl-full-width">Se connecter</a>
             <?php else: ?>
                 <?php if ($error): ?>
-                    <div class="drl-alert drl-alert-danger"><?= e($error) ?></div>
+                    <div class="drl-alert drl-alert-danger" role="alert"><?= e($error) ?></div>
                 <?php endif; ?>
+                <?php if (!empty($_SESSION['supabase_access_token'])): ?>
                 <form method="post" class="drl-auth-form">
                     <?= csrf_field() ?>
-                    <input type="hidden" name="email" value="<?= e($email) ?>">
-                    <input type="hidden" name="token" value="<?= e($token) ?>">
                     <div class="drl-form-group">
                         <label for="password">Nouveau mot de passe (min. 8 caractères)</label>
                         <input type="password" id="password" name="password" minlength="8" required>
@@ -57,6 +62,7 @@ require_once dirname(__DIR__) . '/includes/header.php';
                     </div>
                     <button type="submit" class="drl-btn drl-btn-primary drl-full-width">Enregistrer le mot de passe</button>
                 </form>
+                <?php endif; ?>
             <?php endif; ?>
         </div>
     </div>
