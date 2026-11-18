@@ -62,7 +62,7 @@
    N'envoyez jamais de clé `service_role` ou de mot de passe dans le navigateur ou dans un dépôt public.
 
 ### Étape 4 : Connexion du site à Supabase
-- Définissez **Site URL** sur `APP_URL` dans Supabase, puis autorisez les URL de confirmation, de récupération et le callback OAuth utilisés par le site.
+- Définissez **Site URL** sur `APP_URL` dans Supabase, puis autorisez les URL de confirmation, de récupération et le callback OAumaintth utilisés par le site.
 - Dans les paramètres **Authentication → URL Configuration**, ajoutez `APP_URL/auth/verify-email.php`, `APP_URL/auth/reset-password.php` et `APP_URL/auth/oauth/supabase-callback.php` aux URL autorisées.
 - Dans **Authentication → Providers**, activez l'e-mail et les fournisseurs souhaités. Configurez leurs identifiants OAuth dans Supabase et autorisez le callback affiché par le tableau de bord Supabase (généralement `https://<project-ref>.supabase.co/auth/v1/callback`).
 - Pour les liens d'e-mail, configurez le modèle de confirmation avec `{{ .SiteURL }}/auth/verify-email.php?token_hash={{ .TokenHash }}&type=signup`; le modèle de récupération utilise le même lien avec `type=recovery`.
